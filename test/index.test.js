@@ -1,8 +1,9 @@
 const assert = require('assert')
 const Pool = require('../')
+const script = __dirname + '/sample.sh'
 
 // This pool should work
-const good = new Pool(['sh', ['./sample.sh', '1']], { processes: 4 })
+const good = new Pool(['sh', [script, '1']], { processes: 4 })
 const goodOutput = []
 
 for (let i = 0; i < 10; i++) {
@@ -15,7 +16,7 @@ for (let i = 0; i < 10; i++) {
 }
 
 // This pool should exceed the timeouts
-const bad = new Pool(['sh', ['./sample.sh', '3']], { processes: 6, timeout: 500 })
+const bad = new Pool(['sh', [script, '3']], { processes: 6, timeout: 500 })
 const badErrors = [];
 
 for (let i = 0; i < 10; i++) {

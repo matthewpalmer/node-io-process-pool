@@ -5,7 +5,7 @@ class ProcessPool {
 	// stdin and write output to stdout based on that input, and then remain open for more input
 	// (generally the `-` flag should be used if available). 
 	// spawnArgs should be an array formatted similarly to the regular child_process.spawn
-	// call, for example `new ioProcessPool(['grep', ['-i', '--only-matching', '"magic phrase"', '-']], { process: 16 }).
+	// call, for example `new Pool(['grep', ['-i', '--only-matching', '"magic phrase"', '-']], { process: 16 }).
 	constructor(spawnArgs, { processes = 8, restart = true, timeout = 2000, delimiter = /\n/ } = {}) {
 		this.spawnArgs = spawnArgs;
 		this.poolCount = processes;
