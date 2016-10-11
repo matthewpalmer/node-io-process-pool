@@ -6,18 +6,19 @@ class ProcessPool {
 	// (generally the `-` flag should be used if available). 
 	// spawnArgs should be an array formatted similarly to the regular child_process.spawn
 	// call, for example `new ioProcessPool(['grep', ['-i', '--only-matching', '"magic phrase"', '-']], { process: 16 }).
-	constructor(spawnArgs, { processes = 8, restart = true, timeout = 2000, delimiter = /\\n/ } = {}) {
+	constructor(spawnArgs, { processes = 8, restart = true, timeout = 2000, delimiter = /\n/ } = {}) {
 		this.spawnArgs = spawnArgs;
 		this.poolCount = processes;
 		this.restart = restart;
 		this.timeout = timeout;
 		this.queue = [];
+		this.pool = [];
 		this.outputDelimiter = delimiter;
 
 		// Initialize processes
 		for (var i = 0; i < this.poolCount; i++) {
 			this.pool.push(null);
-			makeProcessInPool(i);
+			this.makeProcessInPool(i);
 		}
 
 		this.runner();
@@ -52,9 +53,16 @@ class ProcessPool {
 		});
 
 		proc.stdout.on('data', chunk => {
+			if (!proc.timeoutHandler) {
+				proc.job.callback('child process timed out');
+				proc.job = null;
+				return;
+			}
+
 			proc.resetTimeout();
 			proc.job.output += chunk;
-			let output = proc.job.output.toString();
+			
+			const output = proc.job.output.toString();
 
 			if (!output.match(this.outputDelimiter)) return; // More chunks coming
 
@@ -68,7 +76,6 @@ class ProcessPool {
 			proc.timeoutHandler = setTimeout(() => {
 				// The current job has taken too long
 				proc.timeoutHandler = null;
-				proc.job = null;
 			}, this.timeout);
 		}
 
@@ -76,18 +83,17 @@ class ProcessPool {
 	}
 
 	runner() {
-		setTimeout(this.runner);
+		setTimeout(this.runner.bind(this));
 
 		if (!this.queue.length) return;
 
-		const nextFreeProcess = this.pool.find(proc => !proc.job);
+		const nextFreeProcess = this.pool.find(proc => !proc.job && !proc.timeoutHandler);
 		if (!nextFreeProcess) return;
 
 		nextFreeProcess.job = this.queue.pop();
-		nextFreeProcess.stdin.write(nextFreeProcess.job.text);
+		nextFreeProcess.stdin.write(nextFreeProcess.job.text + '\n');
 		nextFreeProcess.resetTimeout();
 	}
 }
-
 
 module.exports = ProcessPool;
