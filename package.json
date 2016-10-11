@@ -1,0 +1,19 @@
+{
+  "name": "io-process-pool",
+  "version": "0.0.1",
+  "description": "A process pool for long running I/O processes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "io",
+    "process",
+    "pool",
+    "timeout",
+    "spawn",
+    "children"
+  ],
+  "author": "Matthew Palmer",
+  "license": "ISC"
+}
