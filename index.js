@@ -87,7 +87,7 @@ class ProcessPool {
 
 		if (!this.queue.length) return;
 
-		const nextFreeProcess = this.pool.find(proc => !proc.job && !proc.timeoutHandler);
+		const nextFreeProcess = this.pool.find(proc => !proc.job);
 		if (!nextFreeProcess) return;
 
 		nextFreeProcess.job = this.queue.pop();
