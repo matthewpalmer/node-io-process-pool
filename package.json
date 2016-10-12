@@ -1,6 +1,6 @@
 {
   "name": "io-process-pool",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A process pool for long running I/O processes",
   "main": "index.js",
   "scripts": {
